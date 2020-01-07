@@ -100,7 +100,7 @@ if (isset($_POST['doassetedit'])) {
 		array(
 			'cash_request_type' => 'asset',
 			'cash_action' => 'editasset',
-			'id' => $request_parameters[0],
+			'id' => preg_replace("/[^0-9]/", "", $request_parameters[0] ),
 			'user_id' => $effective_user,
 			'title' => $_POST['asset_title'],
 			'description' => $asset_description,
@@ -128,6 +128,12 @@ $asset_response = $cash_admin->requestAndStore(
 		'id' => $request_parameters[0]
 	)
 );
+
+if (isset($asset_response['status_code']) && $asset_response['status_code'] != 200) {
+    AdminHelper::controllerRedirect('/assets/', true);
+    return;
+}
+
 if ($asset_response['payload']) {
 	$cash_admin->page_data = array_merge($cash_admin->page_data,$asset_response['payload']);
 }
@@ -157,14 +163,14 @@ $cash_admin->page_data['tag_counter'] = $tag_counter;
 $cash_admin->page_data['tag_markup'] = $tag_markup;
 
 // Reset page title to reflect the asset:
-$cash_admin->page_data['ui_title'] = 'Edit “' . $cash_admin->page_data['title'] . '”';
+$cash_admin->page_data['ui_title'] = 'Edit “' . isset($cash_admin->page_data['title']) ? $cash_admin->page_data['title'] : '' . '”';
 
 // Code count
 if ($asset_codes) {
 	$cash_admin->page_data['asset_codes_count'] = count($asset_codes);
 }
 
-if ($cash_admin->page_data['type'] == 'file') {
+if (isset($cash_admin->page_data['type']) && $cash_admin->page_data['type'] == 'file') {
 	// parent id options markup:
 	//$cash_admin->page_data['parent_options'] = '<option value="0" selected="selected">None</option>';
 
@@ -194,7 +200,7 @@ if ($cash_admin->page_data['type'] == 'file') {
 
 	// set the view
 	$cash_admin->setPageContentTemplate('assets_details_file');
-} else if ($cash_admin->page_data['type'] == 'release') {
+} else if (isset($cash_admin->page_data['type']) && $cash_admin->page_data['type'] == 'release') {
 	$fulfillment_response = $cash_admin->requestAndStore(
 		array(
 			'cash_request_type' => 'asset',

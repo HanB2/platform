@@ -7,6 +7,12 @@ require_once(dirname(__FILE__) . '/../../../vendor/autoload.php');
 use CASHMusic\Core\CASHRequest;
 use CASHMusic\Core\CASHSystem;
 
+$client = new \Raven_Client('https://319ebcf106aa451faf4e1d3d7605b3de@sentry.io/252348');
+$error_handler = new \Raven_ErrorHandler($client);
+$error_handler->registerExceptionHandler();
+$error_handler->registerErrorHandler();
+$error_handler->registerShutdownFunction();
+
 // pass basic no-cache headers
 header('P3P: CP="ALL CUR OUR"'); // P3P privacy policy fix
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");

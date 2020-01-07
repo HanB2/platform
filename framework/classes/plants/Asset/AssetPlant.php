@@ -312,6 +312,9 @@ class AssetPlant extends PlantBase {
 	}
 
 	protected function addAsset($title,$description,$user_id,$location='',$connection_id=0,$hash='',$size=0,$public_url='',$type='file',$tags=false,$metadata=false,$parent_id=0,$public_status=0) {
+
+	 	if ($connection_id == '' || $connection_id == null) $connection_id = 0;
+
 		$result = $this->db->setData(
 			'assets',
 			array(
@@ -365,14 +368,14 @@ class AssetPlant extends PlantBase {
 								$parent_details['metadata']['cover'] = '';
 							}
 						}
-						if (isset($parent_details['metadata']['fulfillment'])) {
+						if (isset($parent_details['metadata']['fulfillment']) && is_array($parent_details['metadata']['fulfillment'])) {
 							foreach ($parent_details['metadata']['fulfillment'] as $key => $value) {
 								if ($value == $id) {
 									unset($parent_details['metadata']['fulfillment'][$key]);
 								}
 							}
 						}
-						if (isset($parent_details['metadata']['private'])) {
+						if (isset($parent_details['metadata']['private']) && is_array($parent_details['metadata']['private'])) {
 							foreach ($parent_details['metadata']['private'] as $key => $value) {
 								if ($value == $id) {
 									unset($parent_details['metadata']['private'][$key]);
